@@ -1,0 +1,20 @@
+{
+  "staging": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-carpoolapp-staging-45153-authRole",
+      "UnauthRoleArn": "arn:aws:iam::319346986206:role/amplify-carpoolapp-staging-45153-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::319346986206:role/amplify-carpoolapp-staging-45153-authRole",
+      "Region": "us-east-2",
+      "DeploymentBucketName": "amplify-carpoolapp-staging-45153-deployment",
+      "UnauthRoleName": "amplify-carpoolapp-staging-45153-unauthRole",
+      "StackName": "amplify-carpoolapp-staging-45153",
+      "StackId": "arn:aws:cloudformation:us-east-2:319346986206:stack/amplify-carpoolapp-staging-45153/aecaef80-7e63-11ec-a036-0a9531e46cbc",
+      "AmplifyAppId": "d1njk7b8crxssa"
+    },
+    "categories": {
+      "auth": {
+        "carpoolApp": {}
+      }
+    }
+  }
+}

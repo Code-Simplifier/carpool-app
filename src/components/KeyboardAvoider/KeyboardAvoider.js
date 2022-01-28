@@ -1,0 +1,23 @@
+import React from 'react'
+import { 
+    KeyboardAvoidingView, 
+    ScrollView, 
+    TouchableWithoutFeedback,  
+    Keyboard,
+    Platform
+} from 'react-native'
+
+
+const KeyboardAvoider = ({ children }) => {
+    return (
+        <KeyboardAvoidingView style={{flex: 1}} behavior={ (Platform.OS === 'ios') ? 'padding' : null }>
+            <ScrollView>
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    { children }
+                </TouchableWithoutFeedback>
+            </ScrollView>
+        </KeyboardAvoidingView>
+    )
+}
+
+export default KeyboardAvoider
