@@ -8,8 +8,12 @@ import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native";
 import PhoneInput from "react-native-phone-number-input";
+import { useForm } from 'react-hook-form'
 
 const RegisterScreen = () => {
+
+    const { control, handleSubmit } =  useForm()
+
     const phoneInput = useRef(null);
 
     const navigation = useNavigation()
@@ -35,18 +39,50 @@ const RegisterScreen = () => {
                                 <VStack>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Username</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={false} size={10} />
+                                        <CustomInput 
+                                            name="username"
+                                            control={control}
+                                            secureTextEntry={false} 
+                                            size={10} 
+                                            rules={{
+                                              required: 'Username was not specified',
+                                              minLength: {
+                                                value: 5,
+                                                message: 'Username must be 5 characters long'
+                                              }  
+                                            }}
+                                        />
+                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Email</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={false} size={10} />
+                                        <CustomInput 
+                                            name="email"
+                                            control={control}
+                                            secureTextEntry={false} 
+                                            size={10} 
+                                            rules={{
+                                              required: 'Email was not specified',
+                                            }}
+                                        />
+                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Password</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={true} size={10} />
+                                        <CustomInput 
+                                            name="password"
+                                            control={control}
+                                            secureTextEntry={true} 
+                                            size={10} 
+                                            rules={{
+                                              required: 'Password was not specified',
+                                              minLength: {
+                                                value: 8,
+                                                message: 'Username must be 8 characters long'
+                                              }  
+                                            }}
+                                        />
+                                        {/* <CustomInput secureTextEntry={true} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Phone Number</FormControl.Label>
@@ -67,7 +103,7 @@ const RegisterScreen = () => {
                                             containerStyle={{ marginTop: 10, alignSelf: 'center'}}
                                         />
                                     </FormControl>
-                                    <CustomButton text="Register" onPress={onRegisterPressed} />
+                                    <CustomButton text="Register" onPress={handleSubmit(onRegisterPressed)} />
                                 </VStack>
                             </NativeBaseProvider>
                         </View>

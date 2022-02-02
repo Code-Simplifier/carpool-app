@@ -7,10 +7,14 @@ import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native"
+import { useForm } from 'react-hook-form'
 
 
 
 const NewPassword = () => {
+
+    const { control , handleSubmit } = useForm()
+
     const navigation = useNavigation()
     const onChangePassPressed = () => { 
         Alert.alert('Success', 'Your password has been changed.')
@@ -32,15 +36,36 @@ const NewPassword = () => {
                                 <VStack>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Code</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={false} size={10} />
+                                        <CustomInput 
+                                            name="code"
+                                            control={control}
+                                            secureTextEntry={false} 
+                                            size={10} 
+                                            rules={{ 
+                                                required: 'Code was not specified'
+                                            }}
+                                            
+                                        />
+                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>New Password</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={true} size={10} />
+                                        <CustomInput 
+                                            name="password"
+                                            control={control}
+                                            secureTextEntry={true} 
+                                            size={10} 
+                                            rules={{
+                                              required: 'Password was not specified',
+                                              minLength: {
+                                                value: 8,
+                                                message: 'Password must be 8 characters long'
+                                              }  
+                                            }}
+                                        />
+                                        {/* <CustomInput secureTextEntry={true} size={10} /> */}
                                     </FormControl>
-                                    <CustomButton text="Change Password" onPress={onChangePassPressed} />
+                                    <CustomButton text="Change Password" onPress={handleSubmit(onChangePassPressed)} />
                                 </VStack>
                             </NativeBaseProvider>
                         </View>

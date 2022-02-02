@@ -44,7 +44,7 @@ const SoftBox = () => {
             <Box>
               <VStack space={0} divider={<Divider />}>
                 <Text style={styles.boxTitle}>Book a ride</Text>
-
+                
                 <CustomInput placeholder={'Starting Location'} size={10} />
                 <CustomInput placeholder={'Ending Location'} size={10} />
                 <CustomButton text={text} type='TERTIARY' onPress={() => showMode('date')} />

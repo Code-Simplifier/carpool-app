@@ -7,10 +7,13 @@ import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native"
-
+import { useForm } from 'react-hook-form'
 
 
 const ForgotPassword = () => {
+
+    const { control, handleSubmit } = useForm()
+
     const navigation = useNavigation()
     const onSendCodePressed = () => { 
         Alert.alert('Success', 'Your password reset code has been sent to your registered email.')
@@ -32,10 +35,22 @@ const ForgotPassword = () => {
                                 <VStack>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Username</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={false} size={10} />
+                                        <CustomInput 
+                                            name="username"
+                                            control={control}
+                                            secureTextEntry={false} 
+                                            size={10} 
+                                            rules={{
+                                              required: 'Username was not specified',
+                                              minLength: {
+                                                value: 5,
+                                                message: 'Username must be 5 characters long'
+                                              }  
+                                            }}
+                                        />
+                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
-                                    <CustomButton text="Send Code" onPress={onSendCodePressed} />
+                                    <CustomButton text="Send Code" onPress={handleSubmit(onSendCodePressed)} />
                                 </VStack>
                             </NativeBaseProvider>
                         </View>

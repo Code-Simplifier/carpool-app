@@ -1,42 +1,32 @@
 import React from 'react'
-import { Text, ScrollView, StyleSheet, Dimensions, View, SafeAreaView, FlatList } from 'react-native'
+import { Text, ScrollView, StyleSheet, Dimensions, View, SafeAreaView, FlatList} from 'react-native'
+import { NativeBaseProvider, Button } from 'native-base'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
-import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons"
+import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import SoftBox from '../../components/SoftBox'
-// import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
-// import { GOOGLE_MAPS_APIKEY } from "@env";
+import HomeMap from '../../components/HomeMap/HomeMap'
+import CovidMessage from '../../components/CovidMessage/CovidMessage'
+import HomeSearch from '../../components/HomeSearch/HomeSearch'
+import { useNavigation } from '@react-navigation/native'
+import CustomButton from '../../components/CustomButton'
 
 
 
 const HomeScreen = () => {
+    const navigation = useNavigation()
     return (
-        <KeyboardAvoider>
-            <ScrollView style={styles.container}>
-                <View style={styles.topView}>
-                    <FontAwesomeIcon icon={faMapMarkerAlt} size={60} color='white' />
-                    <Text style={styles.appName}>Carpool App</Text>
-                </View>
-                <View style={styles.bottomView}>
-                    <View style={{ padding: 40 }}>
-                        <Text style={styles.text}>Welcome back! <Text style={{ color: 'black', fontStyle: 'italic', fontSize: 21, textTransform: 'uppercase'}}>Shabad</Text></Text>
-                        {/* <Text style={styles.subtext}>Shabad</Text> */}
-                        {/* <GooglePlacesAutocomplete 
-                            // style={styles.googleInput} 
-                            nearbyPlacesAPI='GooglePlacesSearch' 
-                            debounce={400} 
-                            placeholder='starting location' 
-                            query={{ key: GOOGLE_MAPS_APIKEY, language: 'en' }} 
-                            enablePoweredByContainer={false}
-                            // onPress={(data, details=null) => {
-                            //     console.log(data)
-                            // }}
-                            /> */}
-                        <SoftBox />
-                    </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoider>
+        <ScrollView>
+            <View style={styles.topView}>
+                <HomeMap />
+            </View>
+            <View style={styles.bottomView}>
+                <HomeSearch />
+            </View>
+            
+            {/* <CustomButton text="click me" onPress={navigation.navigate('Destination')} /> */}
+            {/* <CovidMessage /> */}
+        </ScrollView>
     )
 }
 
@@ -46,8 +36,8 @@ const styles = StyleSheet.create({
         fontSize: 30,
     },
     topView: {
-        backgroundColor: '#27236e',
-        height: Dimensions.get('window').height / 3,
+        // backgroundColor: '#27236e',
+        height: Dimensions.get('window').height / 2,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -55,8 +45,8 @@ const styles = StyleSheet.create({
         flex: 1.5,
         backgroundColor: 'white',
         bottom: 50,
-        borderTopStartRadius: 60,
-        borderTopEndRadius: 60,
+        borderTopStartRadius: 20,
+        borderTopEndRadius: 20,
     },
     appName: {
         color: 'white',

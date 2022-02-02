@@ -14,8 +14,9 @@ import ForgotPassword from './src/screens/ForgotPassword'
 import NewPassword from './src/screens/NewPassword'
 import ConfirmEmail from './src/screens/ConfirmEmail';
 
-import Amplify from 'aws-amplify'
+import Amplify, { Auth } from 'aws-amplify'
 import awsconfig from './src/aws-exports'
+import DestinationSearch from './src/screens/DestinationSearch';
 
 
 const Tab = createBottomTabNavigator()
@@ -49,9 +50,10 @@ const App = () => {
   return (
     <NavigationContainer >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name='Home' component={HomeTabs} />
+        <Stack.Screen name='Destination' component={DestinationSearch} />
         <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Register' component={Register} />
-        <Stack.Screen name='Home' component={HomeTabs} />
         <Stack.Screen name='ForgotPass' component={ForgotPassword} />
         <Stack.Screen name='NewPass' component={NewPassword} />
         <Stack.Screen name='ConfirmEmail' component={ConfirmEmail} />
@@ -59,41 +61,40 @@ const App = () => {
     </NavigationContainer>
   );
 }
-{/* 
-const signUpConfig = {
-  header: ' ',
-  hideAllDefault: true,
-  signUpFields: [
-    {
-      label: 'User',
-      key: 'preferred_username',
-      required: true,
-      displayOrder: 1,
-      type: 'string'
-    },
-    {
-      label: 'Email',
-      key: 'email',
-      required: true,
-      displayOrder: 2,
-      type: 'string'
-    },
-    {
-      label: 'Password',
-      key: 'password',
-      required: true,
-      displayOrder: 3,
-      type: 'password'
-    },
-    {
-      label: 'Phone Number',
-      key: 'phone_number',
-      required: true,
-      displayOrder: 4,
-      type: 'string'
-    },
-  ]
-} */}
+// const signUpConfig = {
+//   header: ' ',
+//   hideAllDefault: true,
+//   signUpFields: [
+//     {
+//       label: 'User',
+//       key: 'preferred_username',
+//       required: true,
+//       displayOrder: 1,
+//       type: 'string'
+//     },
+//     {
+//       label: 'Email',
+//       key: 'email',
+//       required: true,
+//       displayOrder: 2,
+//       type: 'string'
+//     },
+//     {
+//       label: 'Password',
+//       key: 'password',
+//       required: true,
+//       displayOrder: 3,
+//       type: 'password'
+//     },
+//     {
+//       label: 'Phone Number',
+//       key: 'phone_number',
+//       required: true,
+//       displayOrder: 4,
+//       type: 'string'
+//     },
+//   ]
+// }
 
 export default App
 

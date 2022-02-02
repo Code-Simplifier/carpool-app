@@ -1,5 +1,5 @@
 import React from 'react'
-import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native'
+import { Text, ScrollView, StyleSheet, Dimensions, View, TextInput } from 'react-native'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons"
 import { FormControl, VStack, NativeBaseProvider } from 'native-base'
@@ -7,15 +7,18 @@ import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native"
-import { Auth } from 'aws-amplify'
-
+import { useForm } from 'react-hook-form'
+// import { Auth } from 'aws-amplify'
 
 
 const LoginScreen = () => {
+
+    const { control, handleSubmit, formState: {errors} } = useForm()
+    // console.log(errors)
     const navigation = useNavigation()
-    const onLoginPressed = async data => {
+    const onLoginPressed = () => {
         // const response = await Auth.signIn(data.username, data.password)
-        // console.log(response)
+        // console.log(data)
         navigation.navigate('Home')
     } 
     const onRegisterPressed = () => {
@@ -41,16 +44,38 @@ const LoginScreen = () => {
                                 <VStack>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Username</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={false} size={10} />
+                                        <CustomInput 
+                                            name="username"
+                                            control={control}
+                                            secureTextEntry={false} 
+                                            size={10} 
+                                            rules={{
+                                              required: 'Username was not specified',
+                                              minLength: {
+                                                value: 5,
+                                                message: 'Username must be 5 characters long'
+                                              }  
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Password</FormControl.Label>
-                                        {/* <Input style={styles.input} /> */}
-                                        <CustomInput secureTextEntry={true} size={10} />
+                                        <CustomInput 
+                                            name="password"
+                                            control={control}
+                                            secureTextEntry={true} 
+                                            size={10} 
+                                            rules={{
+                                                required: 'Password was not specified',
+                                                minLength: {
+                                                    value: 8, 
+                                                    message: 'Password must be 8 characters long.'
+                                                }
+                                            }}
+                                        />
                                     </FormControl>
                                     <Text style={{ color:'#27236e', alignSelf: 'center' }} onPress={onForgotPasswordPressed}>Forgot Password?</Text>
-                                    <CustomButton text="Login" onPress={onLoginPressed}  />
+                                    <CustomButton text="Login" onPress={handleSubmit(onLoginPressed)}  />
                                 </VStack>
                             </NativeBaseProvider>
                         </View>
