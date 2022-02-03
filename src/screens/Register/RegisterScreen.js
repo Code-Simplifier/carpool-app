@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react'
-import { Text, ScrollView, StyleSheet, Dimensions, View } from 'react-native'
+import { Text, ScrollView, StyleSheet, Dimensions, View, Alert } from 'react-native'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons"
 import { FormControl, Input, VStack, NativeBaseProvider } from 'native-base'
@@ -8,20 +8,37 @@ import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native";
 import PhoneInput from "react-native-phone-number-input";
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
+import { Auth } from 'aws-amplify'
+
+const EMAIL_REGEX = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+const PASSWORD_REGEX = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,}$/
+const PHONE_REGEX = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
 
 const RegisterScreen = () => {
 
     const { control, handleSubmit } =  useForm()
-
+    
     const phoneInput = useRef(null);
 
     const navigation = useNavigation()
 
-    const [value, setValue] = useState("");
+    const [pValue, setpValue] = useState("");
 
-    const onRegisterPressed = () => { 
-        navigation.navigate('ConfirmEmail')
+    const onRegisterPressed = async (data) => {
+        const {username, password, email, phone} = data
+        const formattedPhoneNumber = `+${phoneInput.current?.getCallingCode()}${phone}`
+        try {
+            const response = await Auth.signUp({
+                username,
+                password,
+                attributes: {
+                    email, preferred_username: username, phone_number: formattedPhoneNumber
+                }
+            })
+            console.log(response)
+        } catch (e) {Alert.alert('Error', e.message)}
+        // navigation.navigate('ConfirmEmail')
     }
     return (
         <KeyboardAvoider>
@@ -52,7 +69,6 @@ const RegisterScreen = () => {
                                               }  
                                             }}
                                         />
-                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Email</FormControl.Label>
@@ -63,9 +79,9 @@ const RegisterScreen = () => {
                                             size={10} 
                                             rules={{
                                               required: 'Email was not specified',
+                                              pattern: {value: EMAIL_REGEX, message: 'Email is invalid'}
                                             }}
                                         />
-                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Password</FormControl.Label>
@@ -75,32 +91,46 @@ const RegisterScreen = () => {
                                             secureTextEntry={true} 
                                             size={10} 
                                             rules={{
-                                              required: 'Password was not specified',
-                                              minLength: {
-                                                value: 8,
-                                                message: 'Username must be 8 characters long'
-                                              }  
+                                              pattern: {value: PASSWORD_REGEX, message: 'Password must be 8 characters long and have numbers, uppercase and lowercase letters.'},
+                                              required: {value: true, message: 'Password was not specified'}
                                             }}
                                         />
-                                        {/* <CustomInput secureTextEntry={true} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Phone Number</FormControl.Label>
-                                        <PhoneInput
-                                            ref={phoneInput}
-                                            defaultValue={value}
-                                            defaultCode="IN"
-                                            onChangeFormattedText={(text) => {
-                                                setValue(text);
+                                        <Controller
+                                            name='phone'
+                                            control={control}
+                                            rules={{
+                                                required: 'Phone Number was not specified',
+                                                pattern: {value: PHONE_REGEX, message: 'Phone number is invalid'}
                                             }}
-                                            placeholder=' '
-                                            withDarkTheme
-                                            withShadow
-                                            disableArrowIcon={true}
-                                            textContainerStyle={{ color: '#27236e' }}
-                                            codeTextStyle={{ color: '#27236e' }}
-                                            flagButtonStyle={{ backgroundColor: '#fafafa' }}
-                                            containerStyle={{ marginTop: 10, alignSelf: 'center'}}
+                                            render={({field: {value, onChange, onBlur}, fieldState: {error}}) => (
+                                                <>
+                                                    <PhoneInput
+                                                        onChangeText={onChange}
+                                                        value={value}
+                                                        ref={phoneInput}
+                                                        defaultValue={pValue}
+                                                        defaultCode="IN"
+                                                        onChangeFormattedText={(text) => {
+                                                            setpValue(text);
+                                                        }}
+                                                        placeholder=' '
+                                                        withDarkTheme
+                                                        withShadow
+                                                        disableArrowIcon={true}
+                                                        textContainerStyle={[ error && {color: '#f74f43', borderColor: '#f74f43'} ]}
+                                                        codeTextStyle={{ color: '#27236e' }}
+                                                        flagButtonStyle={{ backgroundColor: '#fafafa' }}
+                                                        containerStyle={{ marginTop: 10, alignSelf: 'center'}}
+                                                    />
+                                                    {
+                                                        error && <Text style={{ color: '#f74f43', alignSelf: 'stretch' }}>{ error.message || 'Error' }</Text>
+                                                    }
+                                                </>
+                                            )}
+                                            
                                         />
                                     </FormControl>
                                     <CustomButton text="Register" onPress={handleSubmit(onRegisterPressed)} />

@@ -50,9 +50,9 @@ const App = () => {
   return (
     <NavigationContainer >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Home' component={HomeTabs} />
         <Stack.Screen name='Destination' component={DestinationSearch} />
-        <Stack.Screen name='Login' component={Login} />
         <Stack.Screen name='Register' component={Register} />
         <Stack.Screen name='ForgotPass' component={ForgotPassword} />
         <Stack.Screen name='NewPass' component={NewPassword} />

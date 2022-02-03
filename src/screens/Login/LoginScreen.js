@@ -1,5 +1,5 @@
-import React from 'react'
-import { Text, ScrollView, StyleSheet, Dimensions, View, TextInput } from 'react-native'
+import React, { useState } from 'react'
+import { Text, ScrollView, StyleSheet, Dimensions, View, TextInput, Alert } from 'react-native'
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome"
 import { faMapMarkerAlt } from "@fortawesome/free-solid-svg-icons"
 import { FormControl, VStack, NativeBaseProvider } from 'native-base'
@@ -8,19 +8,30 @@ import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native"
 import { useForm } from 'react-hook-form'
-// import { Auth } from 'aws-amplify'
+import { Auth } from 'aws-amplify'
+
 
 
 const LoginScreen = () => {
 
-    const { control, handleSubmit, formState: {errors} } = useForm()
-    // console.log(errors)
+    const { control, handleSubmit, formState: { errors } } = useForm()
     const navigation = useNavigation()
-    const onLoginPressed = () => {
-        // const response = await Auth.signIn(data.username, data.password)
-        // console.log(data)
-        navigation.navigate('Home')
-    } 
+
+    const [loading, setLoading] = useState(false);
+
+    const onLoginPressed = async (data) => {
+        if (loading) {
+            return
+        }
+        setLoading(true)
+        try {
+            const response = await Auth.signIn(data.username, data.password)
+        } catch (e) {
+            Alert.alert('Error', e.message)
+        }
+        setLoading(false)
+        // navigation.navigate('Home')
+    }
     const onRegisterPressed = () => {
         navigation.navigate('Register')
     }
@@ -38,44 +49,44 @@ const LoginScreen = () => {
                 <View style={styles.bottomView}>
                     <View style={{ padding: 40 }}>
                         <Text style={styles.text}>Welcome</Text>
-                        <Text>Don't have an account? <Text style={{ color:'#27236e' }} onPress={onRegisterPressed}>Register now</Text></Text>
+                        <Text>Don't have an account? <Text style={{ color: '#27236e' }} onPress={onRegisterPressed}>Register now</Text></Text>
                         <View style={{ marginTop: 10 }}>
                             <NativeBaseProvider>
                                 <VStack>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Username</FormControl.Label>
-                                        <CustomInput 
+                                        <CustomInput
                                             name="username"
                                             control={control}
-                                            secureTextEntry={false} 
-                                            size={10} 
+                                            secureTextEntry={false}
+                                            size={10}
                                             rules={{
-                                              required: 'Username was not specified',
-                                              minLength: {
-                                                value: 5,
-                                                message: 'Username must be 5 characters long'
-                                              }  
+                                                required: 'Username was not specified',
+                                                minLength: {
+                                                    value: 5,
+                                                    message: 'Username must be 5 characters long'
+                                                }
                                             }}
                                         />
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>Password</FormControl.Label>
-                                        <CustomInput 
+                                        <CustomInput
                                             name="password"
                                             control={control}
-                                            secureTextEntry={true} 
-                                            size={10} 
+                                            secureTextEntry={true}
+                                            size={10}
                                             rules={{
                                                 required: 'Password was not specified',
                                                 minLength: {
-                                                    value: 8, 
+                                                    value: 8,
                                                     message: 'Password must be 8 characters long.'
                                                 }
                                             }}
                                         />
                                     </FormControl>
-                                    <Text style={{ color:'#27236e', alignSelf: 'center' }} onPress={onForgotPasswordPressed}>Forgot Password?</Text>
-                                    <CustomButton text="Login" onPress={handleSubmit(onLoginPressed)}  />
+                                    <Text style={{ color: '#27236e', alignSelf: 'center' }} onPress={onForgotPasswordPressed}>Forgot Password?</Text>
+                                    <CustomButton text={loading ? "Loading..." : "Login"} onPress={handleSubmit(onLoginPressed)} />
                                 </VStack>
                             </NativeBaseProvider>
                         </View>
