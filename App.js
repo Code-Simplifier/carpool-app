@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
@@ -14,9 +14,10 @@ import ForgotPassword from './src/screens/ForgotPassword'
 import NewPassword from './src/screens/NewPassword'
 import ConfirmEmail from './src/screens/ConfirmEmail';
 
-import Amplify, { Auth } from 'aws-amplify'
+import Amplify, { Auth, Hub } from 'aws-amplify'
 import awsconfig from './src/aws-exports'
 import DestinationSearch from './src/screens/DestinationSearch';
+import { useEffect, useState } from 'react';
 
 
 const Tab = createBottomTabNavigator()
@@ -47,16 +48,56 @@ const HomeTabs = () => {
 }
 
 const App = () => {
+
+  const [currentUser, setCurrentUser] = useState(undefined);
+
+  const checkUser = async () => {
+    try {
+      const authUser = await Auth.currentAuthenticatedUser({ bypassCache: true })
+      setCurrentUser(authUser)
+    } catch (e) {
+      setCurrentUser(null)
+    }
+  }
+
+  
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  useEffect(() => {
+    const listener = (data) => {
+      if (data.payload.event === 'signIn' || data.payload.event === 'signOut') {
+        checkUser()
+      }
+    }
+    Hub.listen('auth', listener)
+    return () => Hub.remove('auth', listener)
+  })
+
+  if (currentUser === undefined) {
+    return (
+      <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    )
+  }
   return (
     <NavigationContainer >
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='Login' component={Login} />
-        <Stack.Screen name='Home' component={HomeTabs} />
-        <Stack.Screen name='Destination' component={DestinationSearch} />
-        <Stack.Screen name='Register' component={Register} />
-        <Stack.Screen name='ForgotPass' component={ForgotPassword} />
-        <Stack.Screen name='NewPass' component={NewPassword} />
-        <Stack.Screen name='ConfirmEmail' component={ConfirmEmail} />
+        {currentUser ? (
+          <Stack.Screen name='Home' component={HomeTabs} />
+        ) : (
+          <>
+            <Stack.Screen name='Login' component={Login} />
+            <Stack.Screen name='Destination' component={DestinationSearch} />
+            <Stack.Screen name='Register' component={Register} />
+            <Stack.Screen name='ForgotPass' component={ForgotPassword} />
+            <Stack.Screen name='NewPass' component={NewPassword} />
+            <Stack.Screen name='ConfirmEmail' component={ConfirmEmail} />
+          </>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

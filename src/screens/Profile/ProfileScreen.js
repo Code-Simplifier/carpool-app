@@ -14,12 +14,10 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 const ProfileScreen = () => {
 
     const navigation = useNavigation()
-    const onArrowPressed = () => {
-        navigation.navigate('Home')
-    }
+
     const onSignOutPressed = () => {
-        // Auth.signOut()
-        navigation.navigate('Login')
+        Auth.signOut()
+        // navigation.navigate('Login')
     }
 
     return (
