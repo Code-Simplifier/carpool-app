@@ -8,16 +8,23 @@ import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
 import { useNavigation } from "@react-navigation/native"
 import { useForm } from 'react-hook-form'
+import { Auth } from 'aws-amplify'
 
 
 const ForgotPassword = () => {
 
     const { control, handleSubmit } = useForm()
-
     const navigation = useNavigation()
-    const onSendCodePressed = () => { 
-        Alert.alert('Success', 'Your password reset code has been sent to your registered email.')
-        navigation.navigate('NewPass')
+
+    const onSendCodePressed = async (data) => { 
+        const {username} = data
+        try {
+            await Auth.forgotPassword(data.username)
+            Alert.alert('Success', 'Your password reset code has been sent to your registered email.')
+            navigation.navigate('NewPass', {username})
+        } catch (e) {
+            Alert.alert('Error', e.message)
+        }
     }
     return (
         <KeyboardAvoider>

@@ -6,19 +6,28 @@ import { FormControl, Input, VStack, NativeBaseProvider } from 'native-base'
 import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { useForm } from 'react-hook-form'
+import { Auth } from 'aws-amplify'
 
 
 
 const NewPassword = () => {
 
-    const { control , handleSubmit } = useForm()
-
+    const route = useRoute()
+    const { control , handleSubmit } = useForm({
+        defaultValues: {username: route?.params?.username}
+    })
     const navigation = useNavigation()
-    const onChangePassPressed = () => { 
-        Alert.alert('Success', 'Your password has been changed.')
-        navigation.navigate('Login')
+
+    const onChangePassPressed = async (data) => {
+        try {
+            await Auth.forgotPasswordSubmit(data.username, data.code, data.password) 
+            Alert.alert('Success', 'Your password has been changed.')
+            navigation.navigate('Login')
+        } catch (e) {
+            Alert.alert('Error', e.message)
+        }
     }
     return (
         <KeyboardAvoider>
@@ -35,6 +44,20 @@ const NewPassword = () => {
                             <NativeBaseProvider>
                                 <VStack>
                                     <FormControl style={styles.form}>
+                                        <FormControl.Label>Username</FormControl.Label>
+                                        <CustomInput 
+                                            name="username"
+                                            control={control}
+                                            secureTextEntry={false} 
+                                            size={10} 
+                                            rules={{ 
+                                                required: 'Username was not specified',
+                                                minLength: {value: 5, message: 'Username must be 5 charaters long'}
+                                            }}
+                                            
+                                        />
+                                    </FormControl>
+                                    <FormControl style={styles.form}>
                                         <FormControl.Label>Code</FormControl.Label>
                                         <CustomInput 
                                             name="code"
@@ -46,7 +69,6 @@ const NewPassword = () => {
                                             }}
                                             
                                         />
-                                        {/* <CustomInput secureTextEntry={false} size={10} /> */}
                                     </FormControl>
                                     <FormControl style={styles.form}>
                                         <FormControl.Label>New Password</FormControl.Label>
@@ -63,7 +85,6 @@ const NewPassword = () => {
                                               }  
                                             }}
                                         />
-                                        {/* <CustomInput secureTextEntry={true} size={10} /> */}
                                     </FormControl>
                                     <CustomButton text="Change Password" onPress={handleSubmit(onChangePassPressed)} />
                                 </VStack>

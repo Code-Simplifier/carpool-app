@@ -29,16 +29,15 @@ const RegisterScreen = () => {
         const {username, password, email, phone} = data
         const formattedPhoneNumber = `+${phoneInput.current?.getCallingCode()}${phone}`
         try {
-            const response = await Auth.signUp({
+            await Auth.signUp({
                 username,
                 password,
                 attributes: {
                     email, preferred_username: username, phone_number: formattedPhoneNumber
                 }
             })
-            console.log(response)
+            navigation.navigate('ConfirmEmail', {username} )
         } catch (e) {Alert.alert('Error', e.message)}
-        // navigation.navigate('ConfirmEmail')
     }
     return (
         <KeyboardAvoider>

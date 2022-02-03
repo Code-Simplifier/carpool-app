@@ -6,19 +6,42 @@ import { FormControl, Input, VStack, NativeBaseProvider } from 'native-base'
 import CustomButton from '../../components/CustomButton'
 import CustomInput from '../../components/CustomInput'
 import KeyboardAvoider from '../../components/KeyboardAvoider'
-import { useNavigation } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { useForm } from 'react-hook-form'
+import { Auth } from 'aws-amplify'
 
 
 
 
 const ConfirmEmail = () => {
-    const { control, handleSubmit } = useForm()
+
+    const route = useRoute()
     const navigation = useNavigation()
-    const onConfirmPressed = () => { 
-        Alert.alert('Success', 'Your email has been registered successfully')
-        navigation.navigate('Login')
+    const { control, handleSubmit, watch } = useForm({
+        defaultValues: {username: route?.params?.username}
+    })
+
+    const username = watch('username')
+
+    const onConfirmPressed = async (data) => { 
+        try {
+            await Auth.confirmSignUp(data.username, data.code)
+            Alert.alert('Success', 'Your email has been registered successfully')
+            navigation.navigate('Login')
+        } catch (e) {
+            Alert.alert('Error', e.message)
+        }
     }
+
+    const onResendPressed = async () => {
+        try {
+            await Auth.resendSignUp(username)
+            Alert.alert('A new code was sent to your email.')
+        } catch (e) {
+            Alert.alert('Error', e.message)
+        }
+    }
+
     const onWhyPressed = () => {
         Alert.alert('Why confirm your email?', 'This step is fail safe for any non existing or deleted email accounts being used to create a CARPOOL APP account.')
     }
@@ -64,7 +87,7 @@ const ConfirmEmail = () => {
                                             }}
                                         />
                                     </FormControl>
-                                    <CustomButton text="Resend Code" type='SECONDARY' />
+                                    <CustomButton text="Resend Code" type='SECONDARY' onPress={onResendPressed} />
                                     <CustomButton text="Confirm" onPress={handleSubmit(onConfirmPressed)} />
                                 </VStack>
                             </NativeBaseProvider>
